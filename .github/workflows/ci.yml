@@ -1,0 +1,39 @@
+name: Build e Testes CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configurar SDK do .NET 9
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Restaurar Depêndencias
+      run: dotnet restore src/UnitTestingTutorial.slnx
+
+    - name: Build do Projeto
+      run: dotnet test src/UnitTestingTutorial.slnx --no-restore
+    
+    - name: Executar Testes com Cobertura
+      run: dotnet test src/UnitTestingTutorial.slnx --no-build --verbosity normal --collect:"XPlat Code Coverage"
+
+    - name: Preparar Artefato de Cobertura
+      run: |
+        find .-name "coverage.cobertura.xml" -exec cp {} ./coverage.cobertura.xml \;
+        zip -j cobertura-cobertura-xml.zip coverage.cobertura.xml
+
+    - name: Upload do Relatório de Cobertura
+      uses: actions/upload-artifact@v4
+      with:
+        name: cobertura-cobertura.xml
+        path: cobertura.cobertura.xml.zip
