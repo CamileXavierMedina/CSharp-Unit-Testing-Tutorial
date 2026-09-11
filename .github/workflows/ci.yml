@@ -18,22 +18,22 @@ jobs:
       with:
         dotnet-version: '9.0.x'
 
-    - name: Restaurar Depêndencias
+    - name: Restaurar Dependências
       run: dotnet restore src/UnitTestingTutorial.slnx
 
     - name: Build do Projeto
-      run: dotnet test src/UnitTestingTutorial.slnx --no-restore
-    
+      run: dotnet build src/UnitTestingTutorial.slnx --no-restore
+
     - name: Executar Testes com Cobertura
       run: dotnet test src/UnitTestingTutorial.slnx --no-build --verbosity normal --collect:"XPlat Code Coverage"
 
     - name: Preparar Artefato de Cobertura
       run: |
-        find .-name "coverage.cobertura.xml" -exec cp {} ./coverage.cobertura.xml \;
+        find . -name "coverage.cobertura.xml" -exec cp {} ./coverage.cobertura.xml \;
         zip -j cobertura-cobertura-xml.zip coverage.cobertura.xml
 
     - name: Upload do Relatório de Cobertura
       uses: actions/upload-artifact@v4
       with:
-        name: cobertura-cobertura.xml
-        path: cobertura.cobertura.xml.zip
+        name: cobertura-cobertura-xml
+        path: cobertura-cobertura-xml.zip
